@@ -30,7 +30,7 @@ After reading the Official MCP quickstart examples on MCP [server](https://model
 
 ## Explanation of Modifications
 
-### Patch to Use SSE/Streamable-HTTP Instead of Stdio
+### Use SSE/Streamable-HTTP Instead of Stdio for Transport Protocol
 
 - Server: use `mcp.run('sys.argv[1]')` instead of `mcp.run('stdio')` given `sys.argv[1]` is either `sse` or `streamable-http`
     - SSE protocol: server main endpoint is `http://localhost:8000/sse`
