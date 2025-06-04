@@ -1,0 +1,17 @@
+[project]
+name = "mcpclient"
+version = "0.1.1"
+description = "A simple MCP client"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "openai>=1.84.0",
+    "mcp>=1.9.2",
+]
+
+[build-system]
+requires = [ "hatchling",]
+build-backend = "hatchling.build"
+
+[project.scripts]
+client = "mcpclient:main"

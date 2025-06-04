@@ -12,3 +12,36 @@ After reading the Official MCP quickstart examples on MCP [server](https://model
     - OpenAI API for LLM calls
     - SSE or Streamable HTTP as the transport protocol between client and server
 2. Explain each modification for readers to go beyond these extensions
+
+### How to Run
+
+1. Install [uv](https://docs.astral.sh)
+2. Choose the protocol, either `sse` or `streamable-http`
+3. Open two terminals on one host (hardcoded localhost HTTP server in this example)
+4. Term 1: run server
+    - Go to the server directory
+    - Start the server `uv run server PROTOCOL_OF_YOUR_CHOICE`
+5. Term 2: run client
+    - Go to the client directory
+    - Setup environment variables for OpenAI endpoint and API
+        - `export OPENAI_BASE_URL=http://xxx/v1`
+        - `export OPENAI_API_KEY=yyy`
+    - Start the client `uv run client PROTOCOL_OF_YOUR_CHOICE`
+
+### Patch to Use SSE/Streamable-HTTP Instead of Stdio
+
+- Server: use `mcp.run('sys.argv[1]')` instead of `mcp.run('stdio')` given `sys.argv[1]` is either `sse` or `streamable-http`
+    - SSE protocol: server main endpoint is `http://localhost:8000/sse`
+    - Streamable HTTP protocol: server only endpoint is `http://localhost:8000/mcp`
+- Client: load `rs` (readstream), `ws` (writestream) from `sse_client` or `streamablehttp_client` intead of `stdio_client` in the original MCP quickstart example
+    - [sse_client awaited return](https://github.com/modelcontextprotocol/python-sdk/blob/main/src/mcp/client/sse.py#L155)
+    - [streamablehttp_client awaited return](https://github.com/modelcontextprotocol/python-sdk/blob/main/src/mcp/client/streamable_http.py#L492)
+
+### Swap Anthropic API to OpenAI API for LLM call
+
+- Replace the LLM call function
+    - `self.anthropic.messages.create()` -> `self.client.chat.completions.create()`
+    - Dynamic model id for vllm
+    - The `tools` argument uses a little different formatting
+- Replace the LLM response object handling
+    - `response` -> `response.choices[0].message`
